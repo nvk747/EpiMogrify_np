@@ -21,7 +21,7 @@ def celltypeBamSelect(ChipSeqHistonMetafile):
   with open(ChipSeqHistonMetafile, "r") as f:
     X = f.readlines()
     for x in X:
-      tmp = csv.reader([x], delimiter=',').next()
+      tmp = next(csv.reader([x], delimiter=','))
       if tmp[2] == "H3K4me3-human":
         H3K4me3[tmp[0]] = tmp 
         bamfile_set =  tmp[4].replace("'", "").replace('[[', '').replace(']]', '').split("], [")
@@ -33,7 +33,7 @@ def celltypeBamSelect(ChipSeqHistonMetafile):
       elif tmp[2] == "Control-human":
         Control[tmp[0]] = tmp
   for e in exp_control:
-    if exp_control[e][-1][0] not in Control: print exp_control[e][-1][0] , " Not found"
+    if exp_control[e][-1][0] not in Control: print (exp_control[e][-1][0] , " Not found")
     else:
       #print  exp_control[e][-1][0]
       con_set = Control[exp_control[e][-1][0]][4].replace("'", "").replace('[[', '').replace(']]', '').split("], [")  # Assuming the control is 1 Experiment
@@ -59,16 +59,16 @@ def peakCallingPipeline(exp_details, exp_contol, reference, ref_annot, wrkdir, e
   
   # Check whether the experiment bam files have already been analysed:
   flag = "Analysed"
-  print "flag: ", flag
+  print ("flag: ", flag)
 
   for expbamfilestocheck in exp_contol[exp_details[0]][0]:
-    print expbamfilestocheck
+    print (expbamfilestocheck)
     if not os.path.exists(expbamfilestocheck + "_peaks.broadPeak"):  
       flag = "NOT analysed"
-      print flag       
+      print (flag)       
 
   if flag != "NOT analysed":
-    print "The Experiment has already been processed: ", exp_details[0]
+    print ("The Experiment has already been processed: ", exp_details[0])
   else:
   # Initiate logging"
     logger = logging.getLogger(exp_details[1].replace(" ", "_"))
@@ -146,7 +146,7 @@ def peakCallingPipeline(exp_details, exp_contol, reference, ref_annot, wrkdir, e
       logger.info("\n\n### 5. MACS2 peak caller: Broad or narrow")
       # Find the fragment size of the bam file....  
       qcBampeak =  "R CMD BATCH  --no-save --no-restore '--args -c=" + bamfile.replace(".bam", "_hg38.bam") + \
-	" -savp=" + bamfile.replace(".bam", "_peak.pdf") +" -out=" + bamfile.replace(".bam", "_peak.stats") + " ' run_spp.R "
+    " -savp=" + bamfile.replace(".bam", "_peak.pdf") +" -out=" + bamfile.replace(".bam", "_peak.stats") + " ' run_spp.R "
 
       logger.info( qcBampeak)
       subprocess.call(qcBampeak, shell=True, stdout=process_log, stderr=subprocess.STDOUT) 
@@ -154,15 +154,15 @@ def peakCallingPipeline(exp_details, exp_contol, reference, ref_annot, wrkdir, e
       if PeakType == "Broad":
         with open( bamfile.replace(".bam", "_peak.stats"), 'r') as f:
           stat = f.readline()
-	  if len(stat.split("\t")[2].split(",")) == 1: fragmentsiz = stat.split("\t")[2]  
-          else: 
-	    fragmentsiz =  stat.split("\t")[2].split(",")[0] # If multiple: the majority has first frag size
-        print stat.split("\t")[2]
-        peakCallcmd = "macs2 callpeak -B --broad --broad-cutoff 0.1 " + macs_seq + " -t " + bamfile.replace(".bam", "_hg38.bam") + " "  \
-          + macs_controlargs + " -n " + bamfile.replace(".bam", "") + " --nomodel --extsize "  + fragmentsiz
+        if len(stat.split("\t")[2].split(",")) == 1: fragmentsiz = stat.split("\t")[2]  
+        else: 
+            fragmentsiz =  stat.split("\t")[2].split(",")[0] # If multiple: the majority has first frag size
+            (stat.split("\t")[2])
+            peakCallcmd = "macs2 callpeak -B --broad --broad-cutoff 0.1 " + macs_seq + " -t " + bamfile.replace(".bam", "_hg38.bam") + " "  \
+            + macs_controlargs + " -n " + bamfile.replace(".bam", "") + " --nomodel --extsize "  + fragmentsiz
       elif PeakType == "Narrow":
         peakCallcmd ="macs2 callpeak -B -q 0.01 " + macs_seq + " -t " + bamfile.replace(".bam", "_hg38.bam") + " " + macs_controlargs \
-          + " -n " + bamfile.replace(".bam", "")
+        + " -n " + bamfile.replace(".bam", "")
       logger.info( peakCallcmd)
       subprocess.call(peakCallcmd, shell=True, stdout=process_log, stderr=subprocess.STDOUT)
 
@@ -176,7 +176,7 @@ def peakCallingPipeline(exp_details, exp_contol, reference, ref_annot, wrkdir, e
       logger.info( annotPeak)
       subprocess.call(annotPeak, shell=True, stdout=process_log, stderr=subprocess.STDOUT)
       covCmd = "bedtools coverage -abam " + bamfile.replace(".bam", "_hg38.bam") + " -b " + \
-  	  bamfile.replace(".bam", "_peaks.broadPeak") + " -counts > " + bamfile.replace(".bam", ".depth") 
+      bamfile.replace(".bam", "_peaks.broadPeak") + " -counts > " + bamfile.replace(".bam", ".depth") 
       logger.info(covCmd)
       subprocess.call(covCmd, shell=True, stdout=process_log, stderr=subprocess.STDOUT)
 
@@ -188,4 +188,4 @@ if len(sys.argv) == 9:
   [H3K4me3, exp_control] = celltypeBamSelect(sys.argv[1])
   peakCallingPipeline(H3K4me3[sys.argv[2]], exp_control, sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7], sys.argv[8])
 else:
-  print sys.argv  
+  print (sys.argv)  
