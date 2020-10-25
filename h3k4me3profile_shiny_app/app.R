@@ -8,9 +8,10 @@ library(grid)
 require(gridExtra)
 library(data.table)
 options(stringsAsFactors = FALSE)})
-#source("myapp/h3k4me3_narrowpeak_mergeshiny.R")
+#source("h3k4me3profile_shiny_app/celltype_H3K4me3profile.R")
 
-## Merge h3k4me3 narrow peaks from all samples in each celltype. The union of broad peaks across samples are generated.
+## This function is taken from https://github.com/SystemsGeneticsSG/EpiMogrify_np and modified
+## Merge h3k4me3 profile from all samples in each celltype. The union of peaks across samples are generated.
 celltype_unionprofile <- function(peakdir, resdir, celltypes, qValue_cutoff ){
   extraCols_broadPeak <- c(signalValue = "numeric", pValue = "numeric", qValue = "numeric")
   celltypes2 <- as.list(read.csv(celltypes,header = FALSE))
@@ -37,7 +38,6 @@ celltype_unionprofile <- function(peakdir, resdir, celltypes, qValue_cutoff ){
     }
   }
 }
-
 
 # See above for the definitions of ui and server
 ui <- fluidPage(

@@ -71,5 +71,42 @@ dir.create(resdir)
 ## Merge samples in each celltype. The union of broad peaks across samples are generated.
 celltype_unionprofile(peakdir, resdir, celltypes, qValue_cutoff)
 ```
+ 
+## III. Rshiny App for celltype_H3K4Me3profile.R
+The H3K4me3profile_shiny_app provides Graphical User Interphase for running celltype_H3K4Me3profile.R (https://github.com/SystemsGeneticsSG/EpiMogrify_np). The script generates cell-type H3K4me3 profile at the specified ChIP-seq q-value filter by Combining H3K4me3 profiles from different samples. 
+
+#### Steps to run H3K4me3profile_shiny_app(app.R)
+
+Pre-install these list of libraries for running the Rshiny App in your R session/conda environment
+
+```
+Note: These libraries need to be installed. 
+library(shiny)
+library(shinyFiles)
+library(rtracklayer)
+library(GenomicRanges)
+library(ggplot2)
+library(grid)
+require(gridExtra)
+library(data.table)
+```
+
+Step 1: Create a local clone by downloading https://github.com/nvk747/EpiMogrify_np/ and cd to EpiMogrify_np directory
+
+Step 2: Generate H3K4me3 profiles (bed files) for all samples for various cell types using bam files downloaded from ENCODE database. This step is done by running generateH3K4me3prolifes_ENCODE.py script. The profiles are stored for each cell type in folder peak directory (h3k4me3_peaks).
+
+Step 3: Open an R session and run `library(shiny)` followed by `runApp("H3K4me3profile_shiny_app")` or simply run following command `Rscript H3K4me3profile_shiny_app/app.R` in your terminal. 
+
+Step 4: Open the html link and please input the location of peak directory using Peak directory button. 
+
+Step 5: Input the required q-value for cutoff (default is 0.05)
+
+Step 6: Provide the file with list of celltypes for profile merging(celltype.csv). 
+
+Once the samples are processed, the merged profile file(union.bed) for each cell type will be downloaded to the peakdirectory. 
+
+
+
+
 
 
